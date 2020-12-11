@@ -7,7 +7,9 @@ Basic utility to read tomography data from files in `*.em` format.
 pip install emfile
 ```
 
-## Usage
+## Basic usage
 ```python
 header, data = emfile.read(path)
+
+emfile.write(path, data, overwrite=True)
 ```
