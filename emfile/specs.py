@@ -50,7 +50,7 @@ header_spec = {
     'unknown6':     'i',
     'username':     '20s',
     'date':         '8s',
-    'padding':      '228x',
+    'userdata':     '228s',
 }
 
 dtype_spec = {

@@ -9,13 +9,11 @@ from .specs import header_spec, dtype_spec
 
 header_struct = struct.Struct(''.join(header_spec.values()))
 
+
 def read(path):
     """
-
+    read an em file and return header info as a dict and data as a np.ndarray
     """
-    # sanitize input
-    path = Path(path).resolve().absolute()
-
     with open(path, 'rb') as f:
         buffer = f.read(header_struct.size)
         header = {key: value for key, value in zip(header_spec.keys(),
@@ -32,6 +30,6 @@ def read(path):
         # get data
         buffer = f.read()
         data = np.frombuffer(buffer, dtype)
-        data = data.reshape(header['xdim'], header['ydim'], header['zdim'])
+        data = data.reshape(header['zdim'], header['ydim'], header['xdim'])
 
     return header, data
