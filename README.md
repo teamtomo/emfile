@@ -9,7 +9,7 @@ pip install emfile
 
 ## Basic usage
 ```python
-header, data = emfile.read(path)
+header, data = emfile.read(path, mmap=False, header_only=False)
 
 emfile.write(path, data, overwrite=True)
 ```
