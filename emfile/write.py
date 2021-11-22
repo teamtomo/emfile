@@ -1,6 +1,8 @@
 import struct
 from pathlib import Path
 
+import numpy as np
+
 from .specs import header_spec, dtype_spec
 
 
@@ -17,13 +19,13 @@ def write(path, data, header_params={}, overwrite=False):
         raise ValueError(f'file {path} exists')
     # prepare header
     header = {
-        'machine':      6,
-        'version':      0,
-        'unused':       0,
-        'dtype':        dtype_spec_rev[data.dtype.char],
-        'xdim':         data.shape[2],
-        'ydim':         data.shape[1],
-        'zdim':         data.shape[0],
+        'machine': 6,
+        'version': 0,
+        'unused': 0,
+        'dtype': dtype_spec_rev[data.dtype.char],
+        'xdim': data.shape[2],
+        'ydim': data.shape[1],
+        'zdim': data.shape[0],
     }
     header.update(header_params)
 
@@ -31,13 +33,14 @@ def write(path, data, header_params={}, overwrite=False):
         s = struct.Struct(form)
         if form in 'ib':
             value = int(header.get(key, 0))
-        elif form.endswith('s'):
+        else:
             value = header.get(key, 'A' * s.size).encode()
         header[key] = s.pack(value)
 
     # prepare data
     header_bin = b''.join(header.values())
-    data_bin = data.tobytes()
+    # TODO: cannot write dask array to bytes yet
+    data_bin = np.asarray(data.tobytes())
 
     with open(path, 'bw+') as f:
         f.write(header_bin + data_bin)

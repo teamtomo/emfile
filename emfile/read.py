@@ -1,6 +1,5 @@
 import struct
 import binascii
-from pathlib import Path
 
 import numpy as np
 
@@ -10,7 +9,7 @@ from .specs import header_spec, dtype_spec
 header_struct = struct.Struct(''.join(header_spec.values()))
 
 
-def read(path):
+def read(path, header_only=False, mmap=False):
     """
     read an em file and return header info as a dict and data as a np.ndarray
     """
@@ -24,12 +23,18 @@ def read(path):
             if isinstance(v, bytes):
                 header[k] = binascii.b2a_base64(v)
 
-        # get dtype:
-        dtype = dtype_spec[header['dtype']]
+        data = None
+        if not header_only:
+            # get dtype and shape from header
+            dtype = dtype_spec[header['dtype']]
+            shape = header['zdim'], header['ydim'], header['xdim']
 
-        # get data
-        buffer = f.read()
-        data = np.frombuffer(buffer, dtype)
-        data = data.reshape(header['zdim'], header['ydim'], header['xdim'])
+            # load data (directly from remaining data in the stream)
+            if mmap:
+                # must pass offset here because memmap default from beginning of file
+                data = np.memmap(f, dtype=dtype, shape=shape,
+                                 offset=header_struct.size, mode='r')
+            else:
+                data = np.fromfile(f, dtype=dtype).reshape(shape)
 
     return header, data
