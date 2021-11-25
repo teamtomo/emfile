@@ -39,8 +39,8 @@ def write(path, data, header_params={}, overwrite=False):
 
     # prepare data
     header_bin = b''.join(header.values())
-    # TODO: cannot write dask array to bytes yet
-    data_bin = np.asarray(data.tobytes())
+    # TODO: cannot write dask array to bytes yet, so we have to convert
+    data_bin = np.asarray(data).tobytes()
 
     with open(path, 'bw+') as f:
         f.write(header_bin + data_bin)
