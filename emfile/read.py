@@ -10,8 +10,26 @@ header_struct = struct.Struct(''.join(header_spec.values()))
 
 
 def read(path, header_only=False, mmap=False):
-    """
-    read an em file and return header info as a dict and data as a np.ndarray
+    """Read an EM file.
+
+    Parameters
+    ----------
+    path : str or os.PathLike
+        Path to the ``.em`` file.
+    header_only : bool, default False
+        Read only the header and return ``None`` for the data.
+    mmap : bool, default False
+        Memory-map the data instead of reading it into memory.
+
+    Returns
+    -------
+    header : dict
+        Header fields, keyed as in ``emfile.specs.header_spec``. String
+        fields (``comment``, ``username``, ``date``, ``userdata``) are
+        returned base64-encoded.
+    data : numpy.ndarray or numpy.memmap or None
+        Image data with shape ``(zdim, ydim, xdim)``, or ``None`` if
+        ``header_only`` is True.
     """
     with open(path, 'rb') as f:
         buffer = f.read(header_struct.size)

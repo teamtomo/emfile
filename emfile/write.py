@@ -10,9 +10,25 @@ dtype_spec_rev = {k: v for v, k in dtype_spec.items()}
 
 
 def write(path, data, header_params={}, overwrite=False):
-    """
-    write data to an .em file
-    header_params: a dict of header parameters as defined by spec.py
+    """Write an array to an EM file.
+
+    Parameters
+    ----------
+    path : str or os.PathLike
+        Path of the ``.em`` file to write.
+    data : array_like
+        3D array with shape ``(zdim, ydim, xdim)``. Its dtype sets the data
+        type stored in the header.
+    header_params : dict, optional
+        Header fields to set, keyed as in ``emfile.specs.header_spec``.
+        These override the values derived from ``data``.
+    overwrite : bool, default False
+        Overwrite ``path`` if it already exists.
+
+    Raises
+    ------
+    ValueError
+        If ``path`` exists and ``overwrite`` is False.
     """
     path = Path(path).resolve().absolute()
     if path.exists() and not overwrite:
